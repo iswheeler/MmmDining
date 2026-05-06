@@ -5,14 +5,17 @@
 
 package dev.altavision.mdininginfo.presentation
 
+import android.R.attr.name
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -56,6 +59,7 @@ import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.http.Query
+
 
 
 // API core:
@@ -176,6 +180,19 @@ fun WearApp(greetingName: String, viewModel: MyViewModel = viewModel()) {
                                 CircularProgressIndicator()
                             }
 
+                            is DetailsUiState.NoMenu -> {
+                                Column (
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+
+                                ) {
+                                    Text(id ?: "", textAlign = TextAlign.Center);
+                                    Text(detailsViewModel.meal, textAlign = TextAlign.Center);
+                                    Text("Menu not available", textAlign = TextAlign.Center);
+                                }
+                            }
+
                             is DetailsUiState.Success -> {
                                 Log.d("MAIN", "detailsState is ${detailsState}");
 //                        Text(text = state.diningLocations[0].displayName)
@@ -186,7 +203,7 @@ fun WearApp(greetingName: String, viewModel: MyViewModel = viewModel()) {
                                     item {
                                         Text(detailsViewModel.meal);
                                     }
-                                    items(detailsState.responseWrapper.menu.categories) { item ->
+                                    items(detailsState.responseWrapper.menu!!.categories) { item ->
 
                                         Card(
                                             onClick = {  },

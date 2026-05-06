@@ -13,6 +13,7 @@ import java.util.Date
 sealed class DetailsUiState {
     object Loading : DetailsUiState()
     data class Success(val responseWrapper: MenuResponseWrapper) : DetailsUiState()
+    object NoMenu : DetailsUiState()
     data class Error(val message : String) : DetailsUiState()
 }
 
@@ -36,7 +37,11 @@ class DetailsViewModel(_locationName: String) : ViewModel() {
                 val currentDate = sdf.format(Date())
                 meal = if (currentHour < 10) "BREAKFAST" else if (currentHour < 17) "LUNCH" else "DINNER";
                 val responseWrapper = RetrofitInstance.api.getMenu(date = currentDate, location = locationName, meal = meal); // TODO: Add breakfast/dinner
-                _detailsUiState.value = DetailsUiState.Success(responseWrapper);
+                if (responseWrapper.menu == null) {
+                    _detailsUiState.value = DetailsUiState.NoMenu
+                } else {
+                    _detailsUiState.value = DetailsUiState.Success(responseWrapper)
+                }
             } catch (e: Exception) {
                 _detailsUiState.value = DetailsUiState.Error(e.message ?: "Error occurred");
             }
